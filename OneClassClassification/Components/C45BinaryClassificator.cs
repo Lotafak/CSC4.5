@@ -4,41 +4,22 @@ using Accord.MachineLearning.DecisionTrees;
 using Accord.MachineLearning.DecisionTrees.Learning;
 using Accord.Math;
 using OneClassClassification.Data;
+using System.Collections.Generic;
+using System;
+using Accord.MachineLearning.DecisionTrees.Pruning;
 
 namespace OneClassClassification.Components
 {
-    /// <summary>
-    /// <see cref="Accord.MachineLearning.DecisionTrees.Learning.C45Learning"/> wrapper for
-    /// for two class classification
-    /// </summary>
     public class C45BinaryClassificator
     {
-        /// <summary>
-        /// Input data values
-        /// </summary>
-        public double[][] Inputs { get; set; }
-
-        /// <summary>
-        /// Input data classes
-        /// </summary>
-        public int[] Outputs { get; set; }
-
-        /// <summary>
-        /// Used to set <see cref="Accord.MachineLearning.DecisionTrees.Learning.C45Learning.Join"/>
-        /// </summary>
+        public double[][] TrainingInput { get; set; }
+        public double[][] PruningInput { get; set; }
+        public int[] TrainingOutput { get; set; }
+        public int[] PruningOutput { get; set; }
         public int Join { get; set; }
-
-        /// <summary>
-        /// Used to set <see cref="Accord.MachineLearning.DecisionTrees.Learning.C45Learning.MaxHeight"/>
-        /// </summary>
         public int MaxHeight { get; set; }
-
         public DecisionTree DecisionTree { get; set; }
         public string OutputRules { get; set; }
-
-        /// <summary>
-        /// Decision Tree rules output file
-        /// </summary>
         public string OutputPath { get; set; } = $"{GlobalVariables.ProjectPath}/outputRules.txt";
 
         /// <summary>
@@ -48,22 +29,28 @@ namespace OneClassClassification.Components
         /// <param name="data">Matrix with last column of output classes.</param>
         public C45BinaryClassificator( double[][] data )
         {
-            Inputs = data
-                .GetColumns(Vector.Range(0, GlobalVariables.Dimensions))
+            int idx;
+            var rnd = new MersenneTwister(GlobalVariables.Seed);
+            double[][] pruningExamples = new double[Convert.ToInt32(0.1 * data.Length)][]; 
+            for( int i = 0; i < pruningExamples.Length; i++ )
+            {
+                idx = rnd.Next(data.Length);
+                pruningExamples[i] = data[idx];
+                data = data.RemoveAt(idx);
+            }
+                
+            TrainingInput = data.GetColumns(Vector.Range(0, GlobalVariables.Dimensions))
                 .To<double[][]>();
+            TrainingOutput = data.GetColumn(GlobalVariables.Dimensions).To<int[]>();
 
-            Outputs = data
-                .GetColumn(GlobalVariables.Dimensions)
-                .To<int[]>();
+            PruningInput = pruningExamples.GetColumns(Vector.Range(0, GlobalVariables.Dimensions))
+                .To<double[][]>();
+            PruningOutput = pruningExamples.GetColumn(GlobalVariables.Dimensions).To<int[]>();
 
             Join = GlobalVariables.Join;
             MaxHeight = GlobalVariables.MaxHeight;
         }
 
-        /// <summary>
-        /// Learns a model, wrapper for
-        /// <see cref="Accord.MachineLearning.DecisionTrees.Learning.C45Learning.Learn(double[][], int[], double[])"/>
-        /// </summary>
         public void Learn()
         {
             var features = new DecisionVariable[GlobalVariables.Dimensions];
@@ -84,7 +71,20 @@ namespace OneClassClassification.Components
                 ParallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 1 }  // Only 1 thread will be used by the learning algorithm
             };
 
-            c45.Learn(Inputs, Outputs);
+            c45.Learn(TrainingInput, TrainingOutput);
+
+            ErrorBasedPruning prune = new ErrorBasedPruning(DecisionTree, PruningInput, PruningOutput);
+
+            double lastError;
+            var error = Double.PositiveInfinity;
+            var counter = 0;
+
+            do
+            {
+                lastError = error;
+                error = prune.Run();
+                if(error == lastError) counter++;
+            } while( error <= lastError && counter < 10);
 
             // Getting rules from tree and saving them to file
             using ( var sw = new StreamWriter(OutputPath) )

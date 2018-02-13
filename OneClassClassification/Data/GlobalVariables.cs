@@ -21,8 +21,10 @@ namespace OneClassClassification.Data
         /// Number of problem's variables
         /// </summary>
         public static int Dimensions { get; set; }
-
-        [Obsolete("K parameter no longer in use")]
+        
+        /// <summary>
+        /// Used to set parameter for boundary rescaler. 1 for no rescalling
+        /// </summary>
         public static double K { get; set; }
 
         /// <summary>
