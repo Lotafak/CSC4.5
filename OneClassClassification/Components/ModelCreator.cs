@@ -134,6 +134,9 @@ namespace OneClassClassification.Components
             Terms = termsCounter;
 
             Model.Write(GlobalVariables.GurobiModelPath);
+
+            Model.Write(Path.Combine(GlobalVariables.ProjectOutputPath,
+                $"model_{GlobalVariables.DatasetName}_{GlobalVariables.Seed}_{GlobalVariables.Components}.lp"));
         }
     }
 }

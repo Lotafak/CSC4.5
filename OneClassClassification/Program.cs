@@ -16,9 +16,9 @@ namespace OneClassClassification
             var customCulture = (System.Globalization.CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
 
-            Thread.CurrentThread.CurrentCulture = customCulture;
+            Thread.CurrentThread.CurrentCulture = customCulture;   
 
-            if ( args.Length != 9 )
+            if ( args.Length != 2 )
             {
                 DisplayUsage();
                 Console.ReadKey();
@@ -29,23 +29,17 @@ namespace OneClassClassification
                 PrepareParameters(args);
                 PrintParameters(args);
 
-                if (DatabaseUtils.CheckIfExists(args))
-                {
-                    Console.WriteLine("Experiment already exists in database!");
-                    return 0;
-                }
-
                 var sw = new Stopwatch();
                 sw.Start();
 
                 Console.WriteLine("----- Generating data ------");
-                var dataGenerator = new DataGenerator();
-                dataGenerator.GenerateTrainingData();
-                dataGenerator.GenerateTestData();
+                var dataReader = new DatasetReader();
+                dataReader.PrepareDatasets();
+                dataReader.DumpToDisk();
 
                 Console.WriteLine("----- Classification data ------");
 
-                var dataClassificator = new C45BinaryClassificator(dataGenerator.TrainingData.ToArray());
+                var dataClassificator = new C45BinaryClassificator(dataReader.TrainingData);
                 dataClassificator.Learn();
 
                 Console.WriteLine("----- Creating model ------");
@@ -55,19 +49,9 @@ namespace OneClassClassification
 
                 sw.Stop();
 
-                Console.WriteLine("----- Calculating statistics ------");
-                
-                // Calculating jaccard index for training data
-                var statistics = new StatisticsCalculator();
-                statistics.CalculateStatistics(dataClassificator.DecisionTree,
-                    modelCreator.UniqueConstraints,
-                    dataGenerator);
-
-                // Saving data to database
-                DatabaseUtils.SaveToDatabase(dataClassificator, modelCreator,
-                    statistics,
-                    dataGenerator,
-                    sw.ElapsedMilliseconds);
+                var sc = new StatisticsCalculator();
+                DatabaseUtils.SaveCaseStudy(sc.EvaluateJaccardIndex(dataReader, dataClassificator),
+                    modelCreator, sw.ElapsedMilliseconds);
             }
             catch ( ArgumentException ex )
             {
@@ -101,30 +85,17 @@ namespace OneClassClassification
         {
             var sb = new StringBuilder();
             sb.AppendLine("Wrong parameters");
-            sb.Append("Program pattern: OneClassClassification.exe [number of positive examples] ");
-            sb.Append("[dimensions] [boundry k parameter] [Tree join parameter] ");
-            sb.Append("[Tree max height parameter] [Random number generator seed] ");
-            sb.Append("[BenchmarkName ={ cricle,cube}] [Components] [Experiment name]\n");
-            sb.AppendLine("example: OneClassClassification.exe 100 5 0.5 100 100 25 circle 20 \"Simple experiment\"");
+            sb.Append("Program pattern: OneClassClassification.exe [seed] [dataset name] [components]");
             Console.Write(sb.ToString());
             Console.WriteLine("Press any key ... ");
         }
 
-        /// <summary>
-        /// Assign command line parameters to <see cref="GlobalVariables"/> class
-        /// </summary>
-        /// <param name="args">Arguments passed from command line</param>
         private static void PrepareParameters( IReadOnlyList<string> args )
         {
-            GlobalVariables.FeasibleExamplesCount = int.Parse(args[0]);
-            GlobalVariables.Dimensions = int.Parse(args[1]);
-            GlobalVariables.K = double.Parse(args[2]);
-            GlobalVariables.Join = int.Parse(args[3]);
-            GlobalVariables.MaxHeight = int.Parse(args[4]);
-            GlobalVariables.Seed = int.Parse(args[5]);
-            GlobalVariables.BenchmarkName = args[6].ToLower();
-            GlobalVariables.Components = int.Parse(args[7]);
-            GlobalVariables.ExperimentName = args[8];
+            GlobalVariables.Seed = int.Parse(args[0]);
+            Accord.Math.Random.Generator.Seed = GlobalVariables.Seed;
+            GlobalVariables.DatasetName = args[1];
+            //GlobalVariables.Components = int.Parse(args[2]);
         }
     }
 }

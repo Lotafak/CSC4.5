@@ -75,7 +75,7 @@ namespace OneClassClassification.Components
         /// </summary>
         public DataGenerator()
         {
-            _projectPath = GlobalVariables.ProjectPath;
+            _projectPath = GlobalVariables.ProjectOutputPath;
             _rand = new MersenneTwister(GlobalVariables.Seed);
             BoundryRescaler = new MinMaxBoundryRescaler();
             switch (GlobalVariables.BenchmarkName)
@@ -204,7 +204,7 @@ namespace OneClassClassification.Components
         /// <param name="filename"></param>
         public void DumpToFile(string filename)
         {
-            var fi = new DirectoryInfo(GlobalVariables.ProjectPath);
+            var fi = new DirectoryInfo(GlobalVariables.ProjectOutputPath);
             if (!fi.Exists)
                 fi.Create();
 

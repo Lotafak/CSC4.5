@@ -39,7 +39,7 @@ namespace OneClassClassification.Components
         /// <summary>
         /// Decision Tree rules output file
         /// </summary>
-        public string OutputPath { get; set; } = $"{GlobalVariables.ProjectPath}/outputRules.txt";
+        public string OutputPath { get; set; } = $"{GlobalVariables.ProjectOutputPath}/outputRules.txt";
 
         /// <summary>
         /// Create instance of C45BinaryClassificator for 2 class classification.
@@ -86,8 +86,18 @@ namespace OneClassClassification.Components
 
             c45.Learn(Inputs, Outputs);
 
+            Accord.IO.Serializer.Save(DecisionTree,
+                Path.Combine(GlobalVariables.ProjectOutputPath, $"DT_{GlobalVariables.DatasetName}_{GlobalVariables.Seed}_{GlobalVariables.Components}"));
+
             // Getting rules from tree and saving them to file
-            using ( var sw = new StreamWriter(OutputPath) )
+            using( var sw = new StreamWriter(Path.Combine(GlobalVariables.ProjectOutputPath, $"DT_rules_{GlobalVariables.DatasetName}_{GlobalVariables.Seed}_{GlobalVariables.Components}.txt")) )
+            {
+                OutputRules = DecisionTree.ToRules().ToString().Replace(",", ".");
+                sw.Write(OutputRules);
+            }
+
+            // Getting rules from tree and saving them to file
+            using( var sw = new StreamWriter(Path.Combine(GlobalVariables.ProjectOutputPath, $"{GlobalVariables.ProjectOutputPath}/outputRules.txt")) )
             {
                 OutputRules = DecisionTree.ToRules().ToString().Replace(",", ".");
                 sw.Write(OutputRules);

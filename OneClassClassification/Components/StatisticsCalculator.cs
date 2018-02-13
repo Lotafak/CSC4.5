@@ -294,7 +294,7 @@ namespace OneClassClassification.Components
 
             // Multiplies binary indicators with coeficients
             var sum = Matrix.ElementwiseMultiply(matrix, binarySolutions).Sum();
-            var path = Path.Combine(GlobalVariables.ProjectPath, "angle_out.lp");
+            var path = Path.Combine(GlobalVariables.ProjectOutputPath, "angle_out.lp");
 
             model.Write(path);
 
@@ -322,6 +322,44 @@ namespace OneClassClassification.Components
             var denom = Math.Sqrt(first.Sum(x => x * x))
                     * Math.Sqrt(second.Sum(x => x * x));
             return Math.Acos(Math.Abs(acc) / denom);
+        }
+
+        public double EvaluateJaccardIndex(DatasetReader dsr, C45BinaryClassificator classificator)
+        {
+            //var dt = Accord.IO.Serializer.Load<DecisionTree>(Path.Combine(GlobalVariables.ProjectOutputPath, 
+            //    $"DT_{GlobalVariables.DatasetName}_{GlobalVariables.Seed}_{GlobalVariables.Components}"))
+
+            //var ucp = new List<double[]>();
+
+            //foreach( var item in dsr.InfeasibleTestData )
+            //{
+            //    var indicator = true;
+
+            //    // item.Length - 1 indicated cutting output
+            //    for( int i = 0; i < item.Length - 1; i++ )
+            //    {
+            //        if( item[i] < dsr.Domain[i][0] || item[i] > dsr.Domain[i][1] )
+            //            indicator = false;
+            //    }
+
+            //    if( indicator )
+            //        ucp.Add(item.Get(Vector.Range(0,GlobalVariables.Dimensions)));
+            //}
+            //ucp.ToArray();
+
+            var ucp = classificator
+                .DecisionTree
+                .Decide(dsr.InfeasibleTestData.GetColumns(Vector.Range(0, GlobalVariables.Dimensions)))
+                .Where(item => item == 1)
+                .ToArray();
+
+            var xc = classificator
+                .DecisionTree
+                .Decide(dsr.FeasibleTrainingData.GetColumns(Vector.Range(0, GlobalVariables.Dimensions)))
+                .Where(item => item == 1)
+                .ToArray();
+            //var denom = dsr.FeasibleTrainingData.GetColumns(Vector.Range(0, GlobalVariables.Dimensions)).Union(ucp).ToArray();
+            return (double)xc.Length / (ucp.Length + dsr.FeasibleTrainingData.Length);
         }
     }
 }

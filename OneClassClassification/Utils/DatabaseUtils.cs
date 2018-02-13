@@ -96,6 +96,26 @@ namespace OneClassClassification.Utils
             db.Dispose();
         }
 
+        internal static void SaveCaseStudy( double jaccard, ModelCreator model, long executionTime )
+        {
+            var db = new Database(GlobalVariables.Dbpath);
+            var experiment = db.NewExperiment();
+
+            experiment["Dataset"] = GlobalVariables.DatasetName;
+            experiment["Seed"] = GlobalVariables.Seed;
+            experiment["Jaccard"] = jaccard;
+            experiment["Components"] = GlobalVariables.Components;
+
+            experiment["Constraints"] = model.Constraints;
+            experiment["Terms"] = model.Terms;
+
+            experiment["ExecutionTime"] = executionTime;
+
+            experiment.Save();
+            experiment.Dispose();
+            db.Dispose();
+        }
+
         // In case of an error save run parameters and errors into database
         public static void SaveErrorToDatabase( string error )
         {

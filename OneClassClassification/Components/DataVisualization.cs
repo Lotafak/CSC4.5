@@ -18,7 +18,7 @@ namespace OneClassClassification.Components
 
         public DataVisualization()
         {
-            _projectPath = GlobalVariables.ProjectPath;
+            _projectPath = GlobalVariables.ProjectOutputPath;
             Url = $"{BaseUrl}{GlobalVariables.BenchmarkName}.html";
         }
 

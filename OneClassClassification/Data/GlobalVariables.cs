@@ -21,8 +21,7 @@ namespace OneClassClassification.Data
         /// Number of problem's variables
         /// </summary>
         public static int Dimensions { get; set; }
-
-        [Obsolete("K parameter no longer in use")]
+        
         public static double K { get; set; }
 
         /// <summary>
@@ -53,23 +52,32 @@ namespace OneClassClassification.Data
         /// </summary>
         public static int Components { get; set; }
 
+        /// <summary>
+        /// Experiments name
+        /// </summary>
         public static string ExperimentName { get; set; }
+        
+        /// <summary>
+        /// Name of the dataset - case study
+        /// </summary>
+        public static string DatasetName { get; set; }
 
         /// <summary>
         /// Folder for output files
         /// </summary>
-        public static readonly string ProjectPath =
+        public static readonly string ProjectOutputPath =
             Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output"));
 
         /// <summary>
-        /// Path to output Gurobi model
+        /// Path to the dataset'ss folder
         /// </summary>
-        public static readonly string GurobiModelPath = Path.Combine(ProjectPath, "Gurobi_out.lp");
+        public static readonly string DatasetPath = Path.GetFullPath(Path.Combine(ProjectOutputPath, @"../input"));
 
-        /// <summary>
-        /// Path to database
-        /// </summary>
-        public static string Dbpath = Path.GetFullPath(Path.Combine(ProjectPath, @"../testDatabase.sqlite"));
+        public static readonly string GurobiModelPath = Path.Combine(ProjectOutputPath, "Gurobi_out.lp");
+
+        public static string Dbpath = Path.GetFullPath(Path.Combine(ProjectOutputPath, @"../testDatabase.sqlite"));
+
+        public static string TestDatasetPath => Path.Combine(ProjectOutputPath, $"{DatasetName}_testDataset.csv");
 
         /// <summary>
         /// Variable used in MILP model as M - big constant
