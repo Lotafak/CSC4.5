@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Plotly data visualisation</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<div id="plot" style="width: 1500px; height: 800px;"></div>
+<script>
+
+    Plotly.d3.csv('data.txt',
+        function(err, rows) {
+            console.log(rows);
+            //console.log(err);
+
+            var x = [10,10,10,10,15,15,15,15],
+                y = [10,10,15,15,10,10,15,15],
+                z = [10,15,10,15,10,15,10,15];
+
+            //for (var teta = 0; teta <= 2*Math.PI; teta += Math.PI/10) {
+            //    for (var fi = 0; fi <= Math.PI; fi += Math.PI/10) {
+            //        x.push(10 + 5 * Math.cos(teta) * Math.sin(fi));
+            //        y.push(10 + 5 * Math.sin(teta) * Math.sin(fi));
+            //        z.push(10 + 5 * Math.cos(fi));
+            //    };
+            //};
+
+            // Bottleneck - going through array twice
+            function unpack(rows, key, y) {
+                var table = [];
+                rows.map(
+                    function (row) {
+                        if (row.y === y)
+                            table.push(row[key]);
+                    });
+                return table;
+            };
+
+            var trace1 =
+            {
+                x: unpack(rows, 'x0', "1"),
+                y: unpack(rows, 'x1', "1"),
+                z: unpack(rows, 'x2', "1"),
+                mode: 'markers',
+                type: 'scatter3d',
+                marker: {
+                    color: 'rgb(128,255,0)',
+                    size: 2
+                }
+            };
+
+            var trace2 =
+            {
+                x: unpack(rows, 'x0', "0"),
+                y: unpack(rows, 'x1', "0"),
+                z: unpack(rows, 'x2', "0"),
+                mode: 'markers',
+                type: 'scatter3d',
+                marker: {
+                    color: 'rgb(255,51,51)',
+                    size: 2
+                }
+            };
+
+            var mesh = {
+                opacity: 0.1,
+                color: 'rbg(0,0,255)',
+                type: 'mesh3d',
+                hoverinfo: 'skip',
+                alphahull:0,
+                x: x,
+                y: y,
+                z: z
+            };
+
+            var data = [trace1, trace2, mesh];
+            var layout = {
+                margin: {
+                    l: 0,
+                    r: 0,
+                    b: 0,
+                    t: 0
+                }
+            };
+            Plotly.newPlot('plot', data, layout);
+        });
+</script>
+</body>
+</html>
