@@ -1,24 +1,33 @@
-<h1>OneClassClassification project - Constraint Synthesis with C4.5 algorithm and testing environment</h1>
+<h1>Constraint Synthesis with C4.5 (CSC4.5) algorithm and testing environment</h1>
+
+<h2>Corresponding article</h2>
+CSC4.5 was created in research reported in the article
+Patryk Kudła, Tomasz P. Pawlak, <a href="">One-class synthesis of constraints for Mixed-Integer Linear Programming with C4.5 decision trees</a>, Applied Soft Computing, Elsevier, 2018.
+
+Bibtex:
+<pre>
+
+</pre>
 
 <h2>Prerequisites</h2>
 
-Project created with Visual Studio 2015 using .NET Framework v4.5.2. To compile the solution given environment is necessary as msbuild used to build Visual Studio projects is no longer included in .NET Framework (<a href="https://blogs.msdn.microsoft.com/visualstudio/2013/07/24/msbuild-is-now-part-of-visual-studio/">more here</a>). Projects dependencies (such as Accord.NET) are managed by NuGet package manager.
+CSC4.5 was created with the Visual Studio 2015 using .NET Framework v4.5.2. Project dependencies (such as Accord.NET) are managed by the NuGet package manager.
 
-Projects are in different version for different tasks (main experiments, tree-pruning, case-study) which are available under different branches on the repository, therefor to work with project Git tools are needed. See <a href="https://git-scm.com/">git command line tools</a> or <a href="https://desktop.github.com/">git desktop app</a>.
+The branches of this repository reflect tasks conducted in the corresponding article. Therefore, Git tools are needed to handle different tasks. See <a href="https://git-scm.com/">git command line tools</a> or <a href="https://desktop.github.com/">git desktop app</a>.
 
-<h2>Project's structure</h2>
+<h2>Structure of the project</h2>
 
-Main project's files are in `OneClassClassification` folder. Project output by default is in `\OneClassClassification\bin\(Debug|Release)`.
+Main files are in `OneClassClassification` directory. Project output by default is in `\OneClassClassification\bin\(Debug|Release)`.
 
-Project's test files are included in `OneClassClassificationTests` folder.
+Test files are included in `OneClassClassificationTests` directory.
 
-Additional script are included in `Scripts` folder in the main project's folder.
+Additional scripts are included in the `Scripts` directory.
 
 Project contains different version on separate git branches:
-- master - contains main experiments version of the project
-- tree-pruning - version prepared for tree-pruning experiment
-- case-study - version prepared for handling case-study data
+- master - contains the main experiments conducted in the research,
+- tree-pruning - the version prepared for tree-pruning experiment,
+- case-study - the version prepared for handling case-study data.
 
-Databases experiments containing statistics and data are included in `Databases` folder.
+Databases with experimental results are included in `Databases` directory.
 
-`Case study` folder contains best output models, training and test datasets for wine-red and wine-white input datasets.
+`Case study` directory contains the best synthesized MIQP models, training and test datasets for the wine-red and the wine-white input datasets.
