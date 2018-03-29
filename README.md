@@ -2,12 +2,29 @@
 
 <h2>Corresponding article</h2>
 CSC4.5 was created in research reported in the article
-Patryk Kudła, Tomasz P. Pawlak, <a href="">One-class synthesis of constraints for Mixed-Integer Linear Programming with C4.5 decision trees</a>, Applied Soft Computing, Elsevier, 2018.
+Patryk Kudła, Tomasz P. Pawlak, <a href="https://www.sciencedirect.com/science/article/pii/S1568494618301479">One-class synthesis of constraints for Mixed-Integer Linear Programming with C4.5 decision trees</a>, Applied Soft Computing, Elsevier, 2018.
 
 Bibtex:
-<pre>
-
-</pre>
+```
+@article{Kudla2018,
+title = "One-class synthesis of constraints for Mixed-Integer Linear Programming with C4.5 decision trees ",
+journal = "Applied Soft Computing ",
+volume = "",
+number = "",
+pages = "",
+year = "2018",
+note = " (in press)",
+issn = "1568-4946",
+doi = "https://doi.org/10.1016/j.asoc.2018.03.025",
+url = "https://www.sciencedirect.com/science/article/pii/S1568494618301479",
+author = "Patryk Kud\l{}a and Tomasz P. Pawlak",
+keywords = "Model acquisition",
+keywords = "Constraint synthesis",
+keywords = "Mathematical programming",
+keywords = "One-class classification",
+keywords = "Business process "
+}
+```
 
 <h2>Prerequisites</h2>
 
